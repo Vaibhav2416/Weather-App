@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<style>
+.mapouter
+{
+    position:relative;
+    text-align:right;
+    height:500px;
+    width:600px;
+    margin-left: 58%;
+  
+    
+}
+#flip{
+   
+    height: 600px;
+    background-image: url(https://media1.popsugar-assets.com/files/thumbor/TX9naAGOWgoSQM94AidjXrfeyqA/fit-in/1024x1024/filters:format_auto-!!-:strip_icc-!!-/2021/01/14/843/n/1922507/dc8bfea2c1e7f671_guillaume-galtier-5aklrccCH7w-unsplash/i/Pink-Sky-Zoom-Background.jpg);
+}
+
+.gmap_canvas {
+    overflow: hidden;
+    background:none!important;
+    height:500px;
+    width:600px;
+    
+}
+#appData{
+    width: 30%;
+    text-align: center;
+    margin-top: -450px;
+    margin-left: 150px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    padding: 20px;
+   
+}
+#appData>p{
+    font-size: 25px;
+}
+h3{
+    font-size: 25px;
+}
+
+
+#header{
+   
+    height: 100px;
+    text-align: center;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+   background-image: url(https://c.tenor.com/E7y6uqqLouAAAAAC/sky-clouds.gif);
+   background-repeat: no-repeat;
+   background-size: 100%;
+    justify-content: center;
+}
+#header>input{
+    width: 280px;
+    height: 50px;
+    border-radius: 10px;
+    font-size: 30px;
+}
+input::placeholder{
+    text-align: center;
+    font-size: 20px;
+   
+}
+button{
+    height: 40px;
+    border-radius: 10px;
+    background-image: url(https://c.tenor.com/mtqH0EdREKkAAAAC/weather.gif);
+    color: white;
+    font-weight: bold;
+    font-size: 15px;
+    font-family: 'Ubuntu', sans-serif;
+    cursor: pointer;
+}
+</style>
+<body>
+    <div id="header">
+    <input id="weather" type="text" placeholder="Enter Place Name">
+    <button onclick="main()" id="mine">Search Weather</button>
+</div>
+<div id="flip">
+    <div class="mapouter">
+        <div class="gmap_canvas">
+            <iframe width="600" 
+            height="500"
+             id="gmap_canvas" 
+             frameborder="0" 
+             scrolling="no" 
+             marginheight="0"
+              marginwidth="0">
+            </iframe>
+        </div>
+        </div>
+    <div id="container"></div>
+</div> 
+</body>
+</html>
+<script>
+const api_key="33c1474794a62207208f9499aec9ad2a"
+   
+async function catchWeather(city){
+    try {
+        
+        let url=`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${api_key}`
+
+        let res=await fetch(url)
+        let info=await res.json();
+        // console.log(info);
+         return info;
+    } catch (error) {
+        
+    }
+}
+// let hours   = milliseconds / (1000*60*60) % 24;
+
+function appendWeather(data){
+    document.querySelector("#container").innerHTML=null
+            let h1=document.createElement("h1")
+            h1.innerText=data.name
+
+            let h3=document.createElement("h3")
+            h3.innerText=`Current Temp: ${Math.floor(data.main.temp-273)} Degree`;
+
+            let p=document.createElement("p");
+            p.innerText=`Max Temp: ${Math.floor(data.main.temp_max-273)} Degree`;
+            p.style.color="red"
+
+            let p2=document.createElement("p");
+            p2.innerText=`Min Temp: ${Math.floor(data.main.temp_min-273)} Degree`;
+           p2.style.color="green"
+            let wind=document.createElement("p");
+            wind.innerText=`Windspeed: ${data.wind.speed}`
+            let div=document.createElement("div");
+            div.setAttribute("id","appData")
+
+            let sun=document.createElement("p")
+            let date=new Date(data.sys.sunrise)
+            sun.innerHTML=`Sunrise:${date}`
+            // sun.innerText=
+
+            let set=document.createElement("p")
+            let tarikh=new Date(data.sys.sunset)
+            set.innerHTML=`Sunset:${tarikh}`
+            
+            div.append(h1,h3,p,p2,wind,sun,set)
+
+            document.querySelector("#container").append(div)
+            let iframe=document.getElementById("gmap_canvas");
+            iframe.src=`https://maps.google.com/maps?q=${data.name}&t=&z=13&ie=UTF8&iwloc=&output=embed`
+}
+
+    async function main(){
+        let city=document.querySelector("#weather").value;
+        let response=catchWeather(city)
+         console.log(response);
+       let data=await response;
+     console.log(data);
+       appendWeather(data)
+    }
+</script>
